@@ -1,26 +1,25 @@
 <template>
-<div>
-<el-menu theme="dark" :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-  <el-menu-item index="1">处理中心</el-menu-item>
-  <el-submenu index="2">
-    <template slot="title">我的工作台</template>
-    <el-menu-item index="2-1">选项1</el-menu-item>
-    <el-menu-item index="2-2">选项2</el-menu-item>
-    <el-menu-item index="2-3">选项3</el-menu-item>
-  </el-submenu>
-  <el-menu-item index="3"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>
-</el-menu>
-<div class="line"></div>
-<el-menu :default-active="activeIndex2" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-  <el-menu-item index="1">处理中心</el-menu-item>
-  <el-submenu index="2">
-    <template slot="title">我的工作台</template>
-    <el-menu-item index="2-1">选项1</el-menu-item>
-    <el-menu-item index="2-2">选项2</el-menu-item>
-    <el-menu-item index="2-3">选项3</el-menu-item>
-  </el-submenu>
-  <el-menu-item index="3"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>
-</el-menu>
+  <div v-if="pageInfo">
+    <el-button @click="toAdd" type="primary">添加医生</el-button>
+    <el-table border :data="doctorList" style="width: 100%">
+      <el-table-column prop="name" label="姓名">
+      </el-table-column>
+      <el-table-column prop="departMentName" label="科室">
+      </el-table-column>
+      <el-table-column prop="gmtCreateStr" label="创建日期">
+      </el-table-column>
+      <el-table-column prop="remark" label="备注">
+      </el-table-column>
+      <el-table-column label="操作">
+        <template scope="scope">
+          <el-button type="text" size="small">编辑</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- <el-pagination @current-change="loadData" :current-page.sync="pageInfo.lastPage" :page-size="10" layout="tot, prev, pagealr, next" :total="pageInfo.total">
+          </el-pagination> -->
+    <el-pagination @current-change="loadData" :current-page.sync="pageInfo.lastPage" :page-size="10" layout="total, prev, pager, next" :total="pageInfo.total">
+    </el-pagination>
   </div>
 </template>
 
@@ -28,13 +27,39 @@
 export default {
   data() {
     return {
-      activeIndex: '1',
-      activeIndex2: '1'
+      pageInfo: null,
+      doctorList: []
     }
   },
+  created() {
+    this._initData()
+  },
   methods: {
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath)
+    _initData() {
+      this.$http.get('/base/doctor/list').then((response) => {
+        let result = response.data
+        if (result.code === 200) {
+          this.pageInfo = result.data
+          this.doctorList = result.data.list
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
+    toAdd() {
+      this.$router.push({
+        name: 'doctorAdd'
+      })
+    },
+    loadData(pageNum) {
+      this.$http.get('/doctor/list?pageNum=' + pageNum).then((response) => {
+        let result = response.data
+        if (result.code === 200) {
+          this.doctorList = result.data.list
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
     }
   }
 }

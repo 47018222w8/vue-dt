@@ -15,18 +15,23 @@
     <div class="c-body">
       <el-col :span="8" class="c-nav">
         <el-menu class="c-menu" theme="dark">
-          <el-submenu index="1">
-            <template slot="title">统计数据</template>
-              <el-menu-item index="1-1">医生术士统计列表</el-menu-item>
-          </el-submenu>
-          <el-submenu index="2">
-            <template slot="title">基础数据</template>
-              <el-menu-item index="1-1">选项1</el-menu-item>
-              <el-menu-item index="1-2">选项2</el-menu-item>
-          </el-submenu>
+          <el-menu-item-group title="统计数据">
+            <el-menu-item index="1">
+              <i class="el-icon-message"></i>医生术士统计</el-menu-item>
+            <el-menu-item index="2">
+              <i class="el-icon-message"></i>导航二</el-menu-item>
+          </el-menu-item-group>
+          <el-menu-item-group title="基础数据">
+            <el-menu-item @click="toPage('doctorList')" index="3">
+              <i class="el-icon-message"></i>医生列表</el-menu-item>
+            <el-menu-item index="4">
+              <i class="el-icon-message"></i>术士列表</el-menu-item>
+          </el-menu-item-group>
         </el-menu>
       </el-col>
-
+      <div class="c-content">
+        <router-view></router-view>
+      </div>
     </div>
     <div class="c-footer">
       123
@@ -45,6 +50,11 @@ export default {
   methods: {
     handleSelect(key, keyPath) {
       console.log(key, keyPath)
+    },
+    toPage(path) {
+      this.$router.push({
+        name: path
+      })
     }
   }
 }
@@ -62,11 +72,14 @@ export default {
     flex: 1;
     min-height: 100%;
     .c-nav {
-      flex: 0 0 10%;
+      flex: 0 0 12%;
       min-height: 100%;
       .c-menu {
         min-height: 100%
       }
+    }
+    .c-content {
+      flex: auto;
     }
   }
 }
