@@ -1,5 +1,5 @@
 <template>
-  <el-form :model="form" label-position="right" ref="form" style="width:300px;margin-top:20px;" label-width="100px">
+  <el-form v-if="form" :model="form" label-position="right" ref="form" style="width:300px;margin-top:20px;" label-width="100px">
     <el-form-item label="姓名" :rules="[{required:true,message:'姓名为必填项'}]" prop="name">
       <el-input type="text" v-model="form.name" auto-complete="off"></el-input>
     </el-form-item>
@@ -10,7 +10,7 @@
       </el-select>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submitForm('form')">确认添加</el-button>
+      <el-button type="primary" @click="submitForm('form')">确认修改</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -18,10 +18,7 @@
 export default {
   data() {
     return {
-      form: {
-        name: '',
-        deptId: ''
-      },
+      form: null,
       departmentList: []
     }
   },
@@ -30,10 +27,11 @@ export default {
   },
   methods: {
     async _initData() {
-      await this.$http.get('/base/department/list').then((response) => {
+      await this.$http.get('/base/doctor/' + this.$route.params.doctorId).then((response) => {
         let result = response.data
         if (result.code === 200) {
           this.departmentList = result.data.departmentList
+          this.form = result.data.doctor
         }
       }).catch((error) => {
         console.log(error)
@@ -42,11 +40,11 @@ export default {
     submitForm(form) {
       this.$refs[form].validate((valid) => {
         if (valid) {
-          this.$http.post('/base/doctor', this.form).then((response) => {
+          this.$http.put('/base/doctor', this.form).then((response) => {
             let result = response.data
             if (result.code === 200) {
               this.$message({
-                message: '添加成功',
+                message: '修改成功',
                 type: 'success',
                 duration: 1500
               })

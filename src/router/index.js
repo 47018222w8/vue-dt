@@ -4,6 +4,7 @@ import home from '../components/home'
 import doctorList from '../page/doctor-list'
 import login from '../page/login'
 import doctorAdd from '../page/doctor-add'
+import doctorUpdate from '../page/doctor-update'
 Vue.use(Router)
 
 export default new Router({
@@ -22,6 +23,11 @@ export default new Router({
           path: 'doctor/add',
           component: doctorAdd,
           name: 'doctorAdd'
+        },
+        {
+          path: 'doctor/update/:doctorId',
+          component: doctorUpdate,
+          name: 'doctorUpdate'
         }
       ]
     },
