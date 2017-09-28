@@ -1,8 +1,8 @@
 <template>
   <div v-if="pageInfo">
-    <el-button @click="toAdd" type="primary">添加医生</el-button>
-    <el-table border :data="doctorList" style="width: 100%">
-      <el-table-column prop="name" label="姓名">
+    <el-button @click="toAdd" type="primary">添加术士</el-button>
+    <el-table border :data="treatmentList" style="width: 100%">
+      <el-table-column prop="name" label="名称">
       </el-table-column>
       <el-table-column prop="departmentName" label="科室">
       </el-table-column>
@@ -28,19 +28,19 @@ export default {
   data() {
     return {
       pageInfo: null,
-      doctorList: []
+      treatmentList: []
     }
   },
   created() {
     this._initData()
   },
   methods: {
-    async _initData() {
-      await this.$http.get('/base/doctor/list').then((response) => {
+    _initData() {
+      this.$http.get('/base/treatment/list').then((response) => {
         let result = response.data
         if (result.code === 200) {
           this.pageInfo = result.data
-          this.doctorList = result.data.list
+          this.treatmentList = result.data.list
         }
       }).catch((error) => {
         console.log(error)
@@ -48,20 +48,20 @@ export default {
     },
     toAdd() {
       this.$router.push({
-        name: 'doctorAdd'
+        name: 'treatmentAdd'
       })
     },
     toUpdate(row) {
       this.$router.push({
-        name: 'doctorUpdate',
-        params: { doctorId: row.id }
+        name: 'treatmentUpdate',
+        params: { treatmentId: row.id }
       })
     },
     loadData(pageNum) {
-      this.$http.get('/base/doctor/list?pageNum=' + pageNum).then((response) => {
+      this.$http.get('/base/treatment/list?pageNum=' + pageNum).then((response) => {
         let result = response.data
         if (result.code === 200) {
-          this.doctorList = result.data.list
+          this.treatmentList = result.data.list
         }
       }).catch((error) => {
         console.log(error)

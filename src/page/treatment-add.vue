@@ -1,6 +1,6 @@
 <template>
-  <el-form v-if="form" :model="form" label-position="right" ref="form" style="width:300px;margin-top:20px;" label-width="100px">
-    <el-form-item label="姓名" :rules="[{required:true,message:'姓名为必填项'}]" prop="name">
+  <el-form :model="form" label-position="right" ref="form" style="width:300px;margin-top:20px;" label-width="100px">
+    <el-form-item label="名称" :rules="[{required:true,message:'名称为必填项'}]" prop="name">
       <el-input type="text" v-model="form.name" auto-complete="off"></el-input>
     </el-form-item>
     <el-form-item label="科室" :rules="[{required:true,message:'科室为必选项'}]" prop="deptId">
@@ -13,7 +13,7 @@
       <el-input type="text" v-model="form.remark" auto-complete="off"></el-input>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" :loading="subDisabled"  @click="submitForm('form')">{{subDisabled?'加载中...':'确认修改'}}</el-button>
+      <el-button type="primary" :loading="subDisabled" @click="submitForm('form')">{{subDisabled?'加载中...':'确认添加'}}</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -21,7 +21,11 @@
 export default {
   data() {
     return {
-      form: null,
+      form: {
+        name: '',
+        deptId: '',
+        remark: ''
+      },
       departmentList: [],
       subDisabled: false
     }
@@ -31,41 +35,37 @@ export default {
   },
   methods: {
     async _initData() {
-      await this.$http.get('/base/doctor/' + this.$route.params.doctorId).then((response) => {
+      await this.$http.get('/base/department/list').then((response) => {
         let result = response.data
         if (result.code === 200) {
           this.departmentList = result.data.departmentList
-          this.form = result.data.doctor
         }
       }).catch((error) => {
         console.log(error)
       })
     },
-    submitForm(form) {
+    async submitForm(form) {
       this.subDisabled = true
-      this.$refs[form].validate((valid) => {
+      await this.$refs[form].validate((valid) => {
         if (valid) {
-          this.$http.put('/base/doctor', this.form).then((response) => {
+          this.$http.post('/base/treatment', this.form).then((response) => {
             let result = response.data
             if (result.code === 200) {
-              let vue = this
               this.$message({
-                message: '修改成功',
+                message: '添加成功',
                 type: 'success',
-                duration: 1500,
-                onClose() {
-                  vue.$router.push({ name: 'doctorList' })
-                }
+                duration: 1500
               })
+              this.$refs[form].resetFields()
             } else { }
           }).catch((error) => {
             console.log(error)
           })
         } else {
-          this.subDisabled = false
           return false
         }
       })
+      this.subDisabled = false
     }
   }
 }

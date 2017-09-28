@@ -1,6 +1,6 @@
 <template>
   <el-form v-if="form" :model="form" label-position="right" ref="form" style="width:300px;margin-top:20px;" label-width="100px">
-    <el-form-item label="姓名" :rules="[{required:true,message:'姓名为必填项'}]" prop="name">
+    <el-form-item label="名称" :rules="[{required:true,message:'名称为必填项'}]" prop="name">
       <el-input type="text" v-model="form.name" auto-complete="off"></el-input>
     </el-form-item>
     <el-form-item label="科室" :rules="[{required:true,message:'科室为必选项'}]" prop="deptId">
@@ -31,11 +31,11 @@ export default {
   },
   methods: {
     async _initData() {
-      await this.$http.get('/base/doctor/' + this.$route.params.doctorId).then((response) => {
+      await this.$http.get('/base/treatment/' + this.$route.params.treatmentId).then((response) => {
         let result = response.data
         if (result.code === 200) {
           this.departmentList = result.data.departmentList
-          this.form = result.data.doctor
+          this.form = result.data.treatment
         }
       }).catch((error) => {
         console.log(error)
@@ -45,7 +45,7 @@ export default {
       this.subDisabled = true
       this.$refs[form].validate((valid) => {
         if (valid) {
-          this.$http.put('/base/doctor', this.form).then((response) => {
+          this.$http.put('/base/treatment', this.form).then((response) => {
             let result = response.data
             if (result.code === 200) {
               let vue = this
@@ -54,7 +54,7 @@ export default {
                 type: 'success',
                 duration: 1500,
                 onClose() {
-                  vue.$router.push({ name: 'doctorList' })
+                  vue.$router.push({ name: 'treatmentList' })
                 }
               })
             } else { }

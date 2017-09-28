@@ -13,7 +13,7 @@
       <el-col :span="8" class="c-nav">
         <el-menu class="c-menu" theme="dark">
           <el-menu-item-group title="统计数据">
-            <el-menu-item index="1">
+            <el-menu-item index="1" @click="toPage('countList')">
               <i class="el-icon-message"></i>医生术士统计</el-menu-item>
             <el-menu-item index="2">
               <i class="el-icon-message"></i>导航二</el-menu-item>
@@ -21,7 +21,7 @@
           <el-menu-item-group title="基础数据">
             <el-menu-item @click="toPage('doctorList')" index="3">
               <i class="el-icon-message"></i>医生列表</el-menu-item>
-            <el-menu-item index="4">
+            <el-menu-item index="4" @click="toPage('treatmentList')">
               <i class="el-icon-message"></i>术士列表</el-menu-item>
           </el-menu-item-group>
         </el-menu>

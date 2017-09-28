@@ -9,8 +9,11 @@
         </el-option>
       </el-select>
     </el-form-item>
+    <el-form-item label="备注" prop="remark">
+      <el-input type="text" v-model="form.remark" auto-complete="off"></el-input>
+    </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submitForm('form')">确认添加</el-button>
+      <el-button type="primary" :loading="subDisabled" @click="submitForm('form')">{{subDisabled?'加载中...':'确认添加'}}</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -20,9 +23,11 @@ export default {
     return {
       form: {
         name: '',
-        deptId: ''
+        deptId: '',
+        remark: ''
       },
-      departmentList: []
+      departmentList: [],
+      subDisabled: false
     }
   },
   created() {
@@ -39,8 +44,9 @@ export default {
         console.log(error)
       })
     },
-    submitForm(form) {
-      this.$refs[form].validate((valid) => {
+    async submitForm(form) {
+      this.subDisabled = true
+      await this.$refs[form].validate((valid) => {
         if (valid) {
           this.$http.post('/base/doctor', this.form).then((response) => {
             let result = response.data
@@ -59,6 +65,7 @@ export default {
           return false
         }
       })
+      this.subDisabled = false
     }
   }
 }
