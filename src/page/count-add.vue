@@ -12,8 +12,8 @@
         </el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="执行日期" :rules="[{required:true,message:'执行日期为必选项'}]" prop="operateDateStr">
-      <el-date-picker v-model="form.operateDateStr" @change="operateDate" :editable="false" type="date" placeholder="请选择" style="width:100%"></el-date-picker>
+    <el-form-item label="执行日期" :rules="[{required:true,message:'执行日期为必选项'}]" prop="operateDate">
+      <el-date-picker v-model="form.operateDate" @change="operateDate" :editable="false" type="date" placeholder="请选择" style="width:100%"></el-date-picker>
     </el-form-item>
     <el-form-item label="次数" prop="count">
       <el-input-number v-model="form.count" :min="1" :max="999" style="width:100%"></el-input-number>
@@ -32,7 +32,8 @@ export default {
         treatmentId: null,
         count: 1,
         remark: '',
-        operateDateStr: ''
+        operateDateStr: null,
+        operateDate: null
       },
       doctorList: null,
       treatmentList: [],
@@ -44,14 +45,11 @@ export default {
   },
   methods: {
     operateDate(value) {
-      this.form.operateDateStr = value
+      value ? this.form.operateDateStr = value : this.form.operateDateStr = null
     },
     async _initData() {
-      await this.$http.get('/base/doctor/list?pageNum=0&pageSize=0').then((response) => {
-        let result = response.data
-        if (result.code === 200) {
-          this.doctorList = result.data.list
-        }
+      await this.$http.get('/doctors?pageNum=0&pageSize=0').then((response) => {
+        this.doctorList = response.data.list
       }).catch((error) => {
         console.log(error)
       })
@@ -60,16 +58,13 @@ export default {
       this.subDisabled = true
       await this.$refs[form].validate((valid) => {
         if (valid) {
-          this.$http.post('/count', this.form).then((response) => {
-            let result = response.data
-            if (result.code === 200) {
-              this.$message({
-                message: '添加成功',
-                type: 'success',
-                duration: 1500
-              })
-              this.form.treatmentId = null
-            } else { }
+          this.$http.post('/relationCounts', this.form).then((response) => {
+            this.$message({
+              message: '添加成功',
+              type: 'success',
+              duration: 1000
+            })
+            this.form.treatmentId = null
           }).catch((error) => {
             console.log(error)
           })
@@ -81,13 +76,8 @@ export default {
     },
     async loadTreatment(value) {
       this.form.treatmentId = null
-      await this.$http.get('/base/treatment/list?pageSize=0&doctorId=' + value).then((response) => {
-        let result = response.data
-        if (result.code === 200) {
-          this.treatmentList = result.data.list
-        } else { }
-      }).catch((error) => {
-        console.log(error)
+      await this.$http.get('/treatments?pageSize=0&doctorId=' + value).then((response) => {
+        this.treatmentList = response.data.list
       })
     }
   }

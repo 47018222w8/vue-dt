@@ -28,19 +28,23 @@ export default {
     submitForm(form) {
       this.$refs[form].validate((valid) => {
         if (valid) {
-          this.$http.post('/login/validate', this.form).then((response) => {
+          this.$http.post('/sessions', this.form).then((response) => {
             let result = response.data
-            if (result.code === 200) {
-              localStorage.setItem(constant.JWT_HEADER, constant.JWT_TOKEN_HEAD + result.data)
-              this.$http.defaults.headers.common[constant.JWT_HEADER] = constant.JWT_TOKEN_HEAD + result.data
-              setTimeout(() => {
-                this.$router.push({
-                  name: 'home'
-                })
-              }, 1000)
-            } else { }
+            localStorage.setItem(constant.JWT_HEADER, constant.JWT_TOKEN_HEAD + result)
+            this.$http.defaults.headers.common[constant.JWT_HEADER] = constant.JWT_TOKEN_HEAD + result
+            setTimeout(() => {
+              this.$router.push({
+                name: 'home'
+              })
+            }, 1000)
           }).catch((error) => {
-            console.log(error)
+            if (error.response) {
+              error.response.status === 400 && this.$message({
+                message: '账号密码错误',
+                center: true,
+                type: 'error'
+              })
+            }
           })
         } else {
           return false

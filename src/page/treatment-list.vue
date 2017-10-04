@@ -1,6 +1,10 @@
 <template>
   <div v-if="pageInfo">
-    <el-button @click="toAdd" type="primary">添加术士</el-button>
+    <el-form :inline="true">
+      <el-form-item>
+        <el-button @click="toAdd" type="primary">添加术士</el-button>
+      </el-form-item>
+    </el-form>
     <el-table border :data="treatmentList" style="width: 100%">
       <el-table-column prop="name" label="名称">
       </el-table-column>
@@ -16,8 +20,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- <el-pagination @current-change="loadData" :current-page.sync="pageInfo.lastPage" :page-size="10" layout="tot, prev, pagealr, next" :total="pageInfo.total">
-            </el-pagination> -->
     <el-pagination @current-change="loadData" :page-size="10" layout="total, prev, pager, next" :total="pageInfo.total">
     </el-pagination>
   </div>
@@ -36,14 +38,9 @@ export default {
   },
   methods: {
     _initData() {
-      this.$http.get('/base/treatment/list').then((response) => {
-        let result = response.data
-        if (result.code === 200) {
-          this.pageInfo = result.data
-          this.treatmentList = result.data.list
-        }
-      }).catch((error) => {
-        console.log(error)
+      this.$http.get('/treatments').then((response) => {
+        this.pageInfo = response.data
+        this.treatmentList = response.data.list
       })
     },
     toAdd() {
@@ -58,13 +55,8 @@ export default {
       })
     },
     loadData(pageNum) {
-      this.$http.get('/base/treatment/list?pageNum=' + pageNum).then((response) => {
-        let result = response.data
-        if (result.code === 200) {
-          this.treatmentList = result.data.list
-        }
-      }).catch((error) => {
-        console.log(error)
+      this.$http.get('/treatments?pageNum=' + pageNum).then((response) => {
+        this.treatmentList = response.data.list
       })
     }
   }

@@ -1,8 +1,26 @@
 <template>
   <div v-if="pageInfo" v-loading.body="loading">
-    <el-button @click="toAdd" type="primary">添加统计</el-button>
-    <el-button @click="excelD" :loading="excelDloading" type="primary">{{excelDloading?'下载中...':'医生-术士excel导出'}}</el-button>
-    <el-button @click="excelT" :loading="excelTloading" type="primary">{{excelTloading?'下载中...':'术士excel导出'}}</el-button>
+    <el-form :inline="true" :model="searchForm">
+      <el-form-item prop="doctorId">
+        <el-select v-model="searchForm.doctorId" filterable placeholder="请选择">
+          <el-option v-for="item in doctorList" :key="item.id" :label="item.name" :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="treatmentId">
+        <el-select v-model="searchForm.treatmentId" filterable placeholder="请选择">
+          <el-option v-for="item in treatmentList" :key="item.id" :label="item.name" :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="operateDate">
+        <el-date-picker v-model="searchForm.operateDate" @change="operateDate" :editable="false" type="date" placeholder="请选择" style="width:100%"></el-date-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="loadData(1)" icon="el-icon-search">搜索</el-button>
+        <el-button @click="toAdd" type="primary">添加统计</el-button>
+      </el-form-item>
+    </el-form>
     <el-table border :data="countList" style="width: 100%">
       <el-table-column prop="doctorName" label="姓名">
       </el-table-column>
@@ -31,10 +49,16 @@ export default {
     return {
       pageInfo: null,
       countList: [],
+      doctorList: [],
+      treatmentList: [],
       pageNum: 1,
       loading: true,
-      excelTloading: false,
-      excelDloading: false
+      searchForm: {
+        doctorId: null,
+        treatmentId: null,
+        operateDateStr: null,
+        operateDate: null
+      }
     }
   },
   created() {
@@ -42,30 +66,29 @@ export default {
   },
   methods: {
     async _initData() {
-      await this.$http.get('/count/list').then((response) => {
-        let result = response.data
-        if (result.code === 200) {
-          this.pageInfo = result.data
-          this.countList = result.data.list
-          this.loading = false
-        }
-      }).catch((error) => {
-        console.log(error)
+      await this.$http.get('/relationCounts').then((response) => {
+        this.pageInfo = response.data
+        this.countList = response.data.list
+        this.loading = false
+      })
+      await this.$http.get('/doctors?pageSize=0').then((response) => {
+        this.doctorList = response.data.list
+      })
+      await this.$http.get('/treatments?pageSize=0').then((response) => {
+        this.treatmentList = response.data.list
       })
     },
+    operateDate(value) {
+      value ? this.searchForm.operateDateStr = value : this.searchForm.operateDateStr = null
+    },
     del(id) {
-      this.$http.delete('/count/' + id).then((response) => {
-        let result = response.data
-        if (result.code === 200) {
-          this.loadData(this.pageNum)
-          this.$message({
-            message: '删除成功',
-            type: 'success',
-            duration: 1500
-          })
-        } else { }
-      }).catch((error) => {
-        console.log(error)
+      this.$http.delete('/relationCounts/' + id).then((response) => {
+        this.loadData(this.pageNum)
+        this.$message({
+          message: '删除成功',
+          type: 'success',
+          duration: 1500
+        })
       })
     },
     excelD() {
@@ -73,37 +96,13 @@ export default {
       setTimeout(() => {
         this.excelDloading = false
       }, 1500)
-      this.$http.get('/count/excel/doctor/week').then((response) => {
-        let result = response.data
-        if (result.code === 200) {
-          window.location.href = result.data
-          this.$message({
-            message: '下载成功',
-            type: 'success',
-            duration: 1500
-          })
-        } else { }
-      }).catch((error) => {
-        console.log(error)
-      })
-    },
-    excelT() {
-      this.excelTloading = true
-      setTimeout(() => {
-        this.excelTloading = false
-      }, 1500)
-      this.$http.get('/count/excel/treatment/week').then((response) => {
-        let result = response.data
-        if (result.code === 200) {
-          window.location.href = result.data
-          this.$message({
-            message: '下载成功',
-            type: 'success',
-            duration: 1500
-          })
-        } else { }
-      }).catch((error) => {
-        console.log(error)
+      this.$http.get('/relationCounts/excel/doctors').then((response) => {
+        window.location.href = response.data
+        this.$message({
+          message: '下载成功',
+          type: 'success',
+          duration: 1500
+        })
       })
     },
     toAdd() {
@@ -112,14 +111,11 @@ export default {
       })
     },
     loadData(pageNum) {
-      this.$http.get('/count/list?pageNum=' + pageNum).then((response) => {
-        let result = response.data
-        if (result.code === 200) {
-          this.countList = result.data.list
-          this.pageNum = pageNum
-        }
-      }).catch((error) => {
-        console.log(error)
+      this.searchForm.pageNum = pageNum
+      this.$http.get('/relationCounts', { params: this.searchForm }).then((response) => {
+        this.countList = response.data.list
+        this.pageInfo = response.data
+        this.pageNum = pageNum
       })
     }
   }

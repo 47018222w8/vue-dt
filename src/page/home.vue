@@ -1,39 +1,37 @@
 <template>
-  <div class="c-grail">
-    <el-menu theme="dark" :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
-      <el-menu-item index="1">处理中心</el-menu-item>
-      <el-submenu index="2">
-        <template slot="title">我的工作台</template>
-        <el-menu-item index="2-1">选项1</el-menu-item>
-        <el-menu-item index="2-2">选项2</el-menu-item>
-        <el-menu-item index="2-3">选项3</el-menu-item>
-      </el-submenu>
-    </el-menu>
-    <div class="c-body">
-      <el-col :span="8" class="c-nav">
-        <el-menu class="c-menu" theme="dark">
-          <el-menu-item-group title="统计数据">
-            <el-menu-item index="1" @click="toPage('countList')">
-              <i class="el-icon-message"></i>医生术士统计</el-menu-item>
-            <el-menu-item index="2">
-              <i class="el-icon-message"></i>导航二</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="基础数据">
-            <el-menu-item @click="toPage('doctorList')" index="3">
-              <i class="el-icon-message"></i>医生列表</el-menu-item>
-            <el-menu-item index="4" @click="toPage('treatmentList')">
-              <i class="el-icon-message"></i>术士列表</el-menu-item>
-          </el-menu-item-group>
+  <el-container style="height:100%">
+    <el-aside width="12%">
+      <el-col :span="12" class="c-nav">
+        <el-menu class="c-nav" default-active="2" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
+          <el-submenu v-for="(item, index) in menuList" :key="index" :index="index+''">
+            <template slot="title">
+              <i :class="item.icon"></i>
+              <span>{{item.name}}</span>
+            </template>
+            <el-menu-item v-for="(son, sIndex) in item.list" @click="toPage(son)" :key="sIndex" :index="index+'-'+sIndex">
+              <i :class="son.icon"></i>{{son.name}}</el-menu-item>
+          </el-submenu>
         </el-menu>
       </el-col>
-      <div class="c-content">
+    </el-aside>
+    <el-container>
+      <el-header class="c-header">
+        <el-dropdown @command="excelExport">
+          <el-button type="info" :loading="excelDloading">
+            {{excelDloading?'下载中...':'excel导出'}}
+            <i class="el-icon-caret-bottom el-icon--right"></i>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="doctors">医生-术士</el-dropdown-item>
+            <el-dropdown-item command="treatments">术士</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-header>
+      <el-main>
         <router-view></router-view>
-      </div>
-    </div>
-    <div class="c-footer">
-      123
-    </div>
-  </div>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script>
@@ -41,44 +39,67 @@ export default {
   data() {
     return {
       activeIndex: '1',
-      activeIndex2: '1'
+      activeIndex2: '1',
+      tagList: [],
+      menuList: [],
+      excelDloading: false
     }
   },
+  created() {
+    this._initData()
+  },
   methods: {
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath)
+    async _initData() {
+      await this.$http.get('/menus').then((response) => {
+        this.menuList = response.data
+      })
     },
-    toPage(path) {
+    closeTag(index) {
+      this.tagList.splice(index, 1)
+    },
+    excelExport(name) {
+      this.excelDloading = true
+      setTimeout(() => {
+        this.excelDloading = false
+      }, 1500)
+      this.$http.get('/relationCounts/excel/' + name).then((response) => {
+        window.location.href = response.data
+        this.$message({
+          message: '下载成功',
+          type: 'success',
+          duration: 1500
+        })
+      })
+    },
+    toPage(menu) {
+      let f = true
+      for (let m in this.menuList) {
+        if (m.id === menu.id) {
+          f = false
+          break
+        }
+      }
+      f && this.tagList.push(menu)
       this.$router.push({
-        name: path
+        name: menu.router
       })
     }
   }
 }
 </script>
 <style lang="less">
-.c-grail {
+.c-nav {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+.c-header {
+  background-color: #eef1f6;
   display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  .c-header .c-footer {
-    flex: 1;
-  }
-  .c-body {
-    display: flex;
-    flex: 1;
-    min-height: 100%;
-    .c-nav {
-      flex: 0 0 12%;
-      min-height: 100%;
-      .c-menu {
-        min-height: 100%
-      }
-    }
-    .c-content {
-      flex: auto;
-      padding-left: 20px;
-    }
+  align-items: center;
+  .el-tag {
+    margin-left: 10px;
   }
 }
 </style>

@@ -10,6 +10,7 @@ import treatmentAdd from '../page/treatment-add'
 import treatmentUpdate from '../page/treatment-update'
 import countList from '../page/count-list'
 import countAdd from '../page/count-add'
+import chart from '../page/chart'
 Vue.use(Router)
 
 export default new Router({
@@ -58,6 +59,11 @@ export default new Router({
           path: 'count/add',
           component: countAdd,
           name: 'countAdd'
+        },
+        {
+          path: 'chart',
+          component: chart,
+          name: 'chart'
         }
       ]
     },

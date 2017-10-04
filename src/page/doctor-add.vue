@@ -35,31 +35,21 @@ export default {
   },
   methods: {
     async _initData() {
-      await this.$http.get('/base/department/list').then((response) => {
-        let result = response.data
-        if (result.code === 200) {
-          this.departmentList = result.data.departmentList
-        }
-      }).catch((error) => {
-        console.log(error)
+      await this.$http.get('/departments').then((response) => {
+        this.departmentList = response.data
       })
     },
     async submitForm(form) {
       this.subDisabled = true
       await this.$refs[form].validate((valid) => {
         if (valid) {
-          this.$http.post('/base/doctor', this.form).then((response) => {
-            let result = response.data
-            if (result.code === 200) {
-              this.$message({
-                message: '添加成功',
-                type: 'success',
-                duration: 1500
-              })
-              this.$refs[form].resetFields()
-            } else { }
-          }).catch((error) => {
-            console.log(error)
+          this.$http.post('/doctors', this.form).then((response) => {
+            this.$message({
+              message: '添加成功',
+              type: 'success',
+              duration: 1500
+            })
+            this.$refs[form].resetFields()
           })
         } else {
           return false
