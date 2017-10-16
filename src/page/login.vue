@@ -8,7 +8,7 @@
         <el-input type="password" v-model="form.password"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" style="width:100%" @click="submitForm('form')">登录</el-button>
+        <el-button type="primary" :loading="subDisabled" style="width:100%" @click="submitForm('form')">{{subDisabled?'加载中...':'登录'}}</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -21,13 +21,15 @@ export default {
       form: {
         password: '',
         account: ''
-      }
+      },
+      subDisabled: false
     }
   },
   methods: {
-    submitForm(form) {
-      this.$refs[form].validate((valid) => {
+    async submitForm(form) {
+      await this.$refs[form].validate((valid) => {
         if (valid) {
+          this.subDisabled = true
           this.$http.post('/sessions', this.form).then((response) => {
             let result = response.data
             localStorage.setItem(constant.JWT_HEADER, constant.JWT_TOKEN_HEAD + result)
@@ -50,6 +52,7 @@ export default {
           return false
         }
       })
+      this.subDisabled = false
     }
   }
 }
