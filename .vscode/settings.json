@@ -11,6 +11,7 @@
         "javascriptreact",
         "html",
         "vue",
+        "js",
         {
             "language": "html",
             "autoFix": true
@@ -25,5 +26,6 @@
         ]
     },
     "editor.fontFamily": "Source Code Pro, 'Courier New', monospace",
-    "files.autoSave": "off"
-}
+    "files.autoSave": "off",
+    "vetur.format.defaultFormatter.ts": "vscode-typescript"
+  }

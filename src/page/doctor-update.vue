@@ -18,48 +18,48 @@
   </el-form>
 </template>
 <script>
-export default {
-  data() {
-    return {
-      form: null,
-      departmentList: [],
-      subDisabled: false
-    }
-  },
-  created() {
-    this._initData()
-  },
-  methods: {
-    async _initData() {
-      await this.$http.get('/doctors/' + this.$route.params.doctorId).then((response) => {
-        let result = response.data
-        this.departmentList = result.departmentList
-        this.form = result.doctor
-      })
+  export default {
+    data() {
+      return {
+        form: null,
+        departmentList: [],
+        subDisabled: false
+      }
     },
-    submitForm(form) {
-      this.subDisabled = true
-      this.$refs[form].validate((valid) => {
-        if (valid) {
-          this.$http.put('/doctors', this.form).then((response) => {
-            let vue = this
-            this.$message({
-              message: '修改成功',
-              type: 'success',
-              duration: 1500,
-              onClose() {
-                vue.$router.push({ name: 'doctorList' })
-              }
+    created() {
+      this._initData()
+    },
+    methods: {
+      async _initData() {
+        await this.$http.get('/doctors/' + this.$route.params.doctorId).then((response) => {
+          let result = response.data
+          this.departmentList = result.departmentList
+          this.form = result.doctor
+        })
+      },
+      submitForm(form) {
+        this.subDisabled = true
+        this.$refs[form].validate((valid) => {
+          if (valid) {
+            this.$http.put('/doctors', this.form).then((response) => {
+              let vue = this
+              this.$message({
+                message: '修改成功',
+                type: 'success',
+                duration: 1500,
+                onClose() {
+                  vue.$router.push({ name: 'doctorList' })
+                }
+              })
             })
-          })
-        } else {
-          this.subDisabled = false
-          return false
-        }
-      })
+          } else {
+            this.subDisabled = false
+            return false
+          }
+        })
+      }
     }
   }
-}
 </script>
 <style lang="less">
 
