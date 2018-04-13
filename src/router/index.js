@@ -28,12 +28,14 @@ export default new Router({
         {
           path: 'doctor/add',
           component: doctorAdd,
-          name: 'doctorAdd'
+          name: 'doctorAdd',
+          meta: {showBack: true}
         },
         {
           path: 'doctor/update/:doctorId',
           component: doctorUpdate,
-          name: 'doctorUpdate'
+          name: 'doctorUpdate',
+          meta: {showBack: true}
         },
         {
           path: 'treatment/list',
@@ -43,7 +45,8 @@ export default new Router({
         {
           path: 'treatment/add',
           component: treatmentAdd,
-          name: 'treatmentAdd'
+          name: 'treatmentAdd',
+          meta: {showBack: true}
         },
         {
           path: 'treatment/update/:treatmentId',
@@ -58,7 +61,8 @@ export default new Router({
         {
           path: 'count/add',
           component: countAdd,
-          name: 'countAdd'
+          name: 'countAdd',
+          meta: {showBack: true}
         },
         {
           path: 'chart',

@@ -7,11 +7,9 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
 import constant from './components/constant'
-import FastClick from 'fastclick'
 import './style/main.less'
 Vue.config.productionTip = false
 Vue.use(ElementUI)
-FastClick.attach(document.body)
 axios.defaults.baseURL = constant.BASE_URL
 axios.defaults.headers.common[constant.JWT_HEADER] = localStorage.getItem(constant.JWT_HEADER)
 axios.defaults.timeout = 10000
@@ -26,6 +24,13 @@ axios.interceptors.response.use(function (res) {
       onClose() {
         router.push({ name: 'login' })
       }
+    })
+    throw new Error(error)
+  } else if (error.response.status === 500) {
+    Vue.prototype.$message({
+      message: '服务器抽风,请找文强爸爸',
+      center: true,
+      type: 'error'
     })
     throw new Error(error)
   } else {
