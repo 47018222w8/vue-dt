@@ -14,15 +14,7 @@
     </el-aside>
     <el-container>
       <el-header class="c-header">
-        <!-- <div class="c-collapse" @click="isCollapse?isCollapse = false: isCollapse = true">
-          <div style="font-size:1.5em;" v-show="isCollapse">
-            <i class="fas fa-angle-double-left"></i>
-          </div>
-          <div style="font-size:1.5em;" v-show="!isCollapse">
-            <i class="fas fa-angle-double-right"></i>
-          </div>
-        </div> -->
-        <!-- <el-dropdown @command="excelExport">
+        <el-dropdown @command="excelExport" v-show="!$route.meta.showBack">
           <el-button type="info" :loading="excelDloading">
             {{excelDloading?'下载中...':'excel导出'}}
             <i class="el-icon-caret-bottom el-icon--right"></i>
@@ -31,7 +23,7 @@
             <el-dropdown-item command="doctors">医生-术士</el-dropdown-item>
             <el-dropdown-item command="treatments">术士</el-dropdown-item>
           </el-dropdown-menu>
-        </el-dropdown> -->
+        </el-dropdown>
         <div>
           <el-button v-show="$route.meta.showBack" style="color:#67C23A" type="text" @click="back">返回</el-button>
         </div>
@@ -113,7 +105,7 @@
       },
       logout() {
         localStorage.removeItem(constant.JWT_HEADER)
-        this.$router.push({name: 'login'})
+        this.$router.push({ name: 'login' })
       },
       toPage(menu) {
         let f = true
@@ -136,6 +128,7 @@
   .c-nav {
     overflow: hidden;
     height: 100%;
+    min-width: 200px;
   }
   .c-header {
     .c-collapse:hover {
