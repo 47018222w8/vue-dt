@@ -88,9 +88,6 @@
       },
       excelExport(name) {
         this.excelDloading = true
-        setTimeout(() => {
-          this.excelDloading = false
-        }, 1500)
         this.$http.get('/relationCounts/excel/' + name).then((response) => {
           window.location.href = response.data
           this.$message({
@@ -98,6 +95,7 @@
             type: 'success',
             duration: 1500
           })
+          this.excelDloading = false
         })
       },
       back() {
